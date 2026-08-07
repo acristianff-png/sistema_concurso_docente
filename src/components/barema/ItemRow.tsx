@@ -1,9 +1,14 @@
 import { useState } from 'react'
-import { ProgressBar } from '@/components/brand'
+import { ProgressBar, Badge } from '@/components/brand'
 import { FonteList } from './FonteList'
 import { AddFonteForm } from './AddFonteForm'
 import { totalItem, type ItemComFontes } from '@/types/domain'
 import type { NovaFonte } from '@/hooks/useBarema'
+
+const MODO_LABEL = {
+  carga_horaria: 'carga horária',
+  periodo: 'período',
+} as const
 
 interface ItemRowProps {
   item: ItemComFontes
@@ -27,7 +32,12 @@ export function ItemRow({ item, mostrarProjecao, onAddFonte, onToggleConfirmado,
         onClick={() => setExpanded((v) => !v)}
         className="flex w-full items-center justify-between gap-4 text-left"
       >
-        <span className="text-sm font-medium text-ink">{item.nome}</span>
+        <span className="flex items-center gap-2 text-sm font-medium text-ink">
+          {item.nome}
+          {item.modo_calculo !== 'manual' ? (
+            <Badge tone="neutral">{MODO_LABEL[item.modo_calculo]}</Badge>
+          ) : null}
+        </span>
         <span className="flex items-center gap-3">
           <span className="w-32">
             <ProgressBar
@@ -52,6 +62,7 @@ export function ItemRow({ item, mostrarProjecao, onAddFonte, onToggleConfirmado,
           {addingFonte ? (
             <div className="mt-2">
               <AddFonteForm
+                item={item}
                 onSubmit={async (fonte) => {
                   await onAddFonte(item.id, fonte)
                   setAddingFonte(false)

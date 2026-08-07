@@ -1,6 +1,8 @@
 export type StatusAcao = 'nao_iniciado' | 'em_andamento' | 'concluido'
 export type PrioridadeAcao = 'baixa' | 'media' | 'alta'
 export type StatusSugestao = 'sugerida' | 'aceita' | 'descartada'
+export type ModoCalculo = 'manual' | 'carga_horaria' | 'periodo'
+export type UnidadePeriodo = 'semestre' | 'ano'
 
 export interface Edital {
   id: string
@@ -29,6 +31,13 @@ export interface ItemBarema {
   nome: string
   unidade: number
   pontuacao_maxima: number
+  modo_calculo: ModoCalculo
+  /** Só usado quando modo_calculo = 'carga_horaria': tamanho do bloco de horas (ex.: 15). */
+  horas_por_unidade: number | null
+  /** Pontos por bloco de horas (carga_horaria) ou por período (periodo). */
+  pontos_por_unidade: number | null
+  /** Só usado quando modo_calculo = 'periodo'. */
+  unidade_periodo: UnidadePeriodo | null
   created_at: string
   updated_at: string
 }
@@ -41,6 +50,11 @@ export interface FontePontuacao {
   link: string | null
   data_referencia: string | null
   confirmado: boolean
+  /** Preenchido quando o item pai é modo_calculo = 'carga_horaria'; o valor é calculado pelo banco. */
+  carga_horaria_horas: number | null
+  /** Preenchidos quando o item pai é modo_calculo = 'periodo'. data_fim nulo = em andamento (calcula até hoje). */
+  data_inicio: string | null
+  data_fim: string | null
   created_at: string
   updated_at: string
 }
@@ -186,6 +200,10 @@ export interface Database {
           nome: string
           unidade: number
           pontuacao_maxima: number
+          modo_calculo: ModoCalculo
+          horas_por_unidade: number | null
+          pontos_por_unidade: number | null
+          unidade_periodo: UnidadePeriodo | null
           created_at: string
           updated_at: string
         }
@@ -195,6 +213,10 @@ export interface Database {
           nome: string
           unidade?: number
           pontuacao_maxima: number
+          modo_calculo?: ModoCalculo
+          horas_por_unidade?: number | null
+          pontos_por_unidade?: number | null
+          unidade_periodo?: UnidadePeriodo | null
           created_at?: string
           updated_at?: string
         }
@@ -204,6 +226,10 @@ export interface Database {
           nome?: string
           unidade?: number
           pontuacao_maxima?: number
+          modo_calculo?: ModoCalculo
+          horas_por_unidade?: number | null
+          pontos_por_unidade?: number | null
+          unidade_periodo?: UnidadePeriodo | null
           created_at?: string
           updated_at?: string
         }
@@ -218,6 +244,9 @@ export interface Database {
           link: string | null
           data_referencia: string | null
           confirmado: boolean
+          carga_horaria_horas: number | null
+          data_inicio: string | null
+          data_fim: string | null
           created_at: string
           updated_at: string
         }
@@ -229,6 +258,9 @@ export interface Database {
           link?: string | null
           data_referencia?: string | null
           confirmado?: boolean
+          carga_horaria_horas?: number | null
+          data_inicio?: string | null
+          data_fim?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -240,6 +272,9 @@ export interface Database {
           link?: string | null
           data_referencia?: string | null
           confirmado?: boolean
+          carga_horaria_horas?: number | null
+          data_inicio?: string | null
+          data_fim?: string | null
           created_at?: string
           updated_at?: string
         }

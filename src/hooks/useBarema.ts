@@ -6,10 +6,14 @@ import type { FontePontuacao } from '@/types/database'
 
 export interface NovaFonte {
   descricao: string
-  valor: number
+  /** Manual: valor digitado. Carga horária/período: ignorado — o banco calcula. */
+  valor?: number
   link?: string | null
   data_referencia?: string | null
   confirmado: boolean
+  carga_horaria_horas?: number | null
+  data_inicio?: string | null
+  data_fim?: string | null
 }
 
 interface UseBaremaResult {
@@ -67,10 +71,13 @@ export function useBarema(editalId: string | null): UseBaremaResult {
         id: tempId,
         item_id: itemId,
         descricao: fonte.descricao,
-        valor: fonte.valor,
+        valor: fonte.valor ?? 0,
         link: fonte.link ?? null,
         data_referencia: fonte.data_referencia ?? null,
         confirmado: fonte.confirmado,
+        carga_horaria_horas: fonte.carga_horaria_horas ?? null,
+        data_inicio: fonte.data_inicio ?? null,
+        data_fim: fonte.data_fim ?? null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       }
@@ -94,6 +101,9 @@ export function useBarema(editalId: string | null): UseBaremaResult {
         link: fonte.link ?? null,
         data_referencia: fonte.data_referencia ?? null,
         confirmado: fonte.confirmado,
+        carga_horaria_horas: fonte.carga_horaria_horas ?? null,
+        data_inicio: fonte.data_inicio ?? null,
+        data_fim: fonte.data_fim ?? null,
       })
 
       if (error) {

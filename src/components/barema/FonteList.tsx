@@ -34,6 +34,14 @@ export function FonteList({ fontes, onToggleConfirmado, onDelete }: FonteListPro
               {f.data_referencia ? (
                 <p className="font-mono text-xs text-ink/50">{f.data_referencia}</p>
               ) : null}
+              {f.carga_horaria_horas != null ? (
+                <p className="font-mono text-xs text-ink/50">{f.carga_horaria_horas}h</p>
+              ) : null}
+              {f.data_inicio ? (
+                <p className="font-mono text-xs text-ink/50">
+                  {f.data_inicio} — {f.data_fim ?? 'em andamento'}
+                </p>
+              ) : null}
             </div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-sm font-bold text-ink">{f.valor}</span>

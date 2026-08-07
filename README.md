@@ -71,6 +71,12 @@ No **SQL Editor** do painel do Supabase, rode os arquivos de
 4. `20260807120004_duplicar_edital.sql` — define a função
    `duplicar_edital_para_novo()`, usada pelo botão "Duplicar estrutura para
    novo edital" na página de Histórico
+5. `20260807130001_calculo_automatico.sql` — cálculo automático de pontuação
+   por carga horária ou por período (semestre/ano), conforme o modo de cada
+   item do barema
+6. `20260807130002_seed_dados_reais.sql` — substitui `seed_dados_iniciais()`
+   pelos valores oficiais do edital e pelas experiências reais do currículo
+   (ver nota abaixo se você já rodou o seed antigo)
 
 Alternativamente, se preferir usar o [Supabase CLI](https://supabase.com/docs/guides/cli):
 
@@ -87,6 +93,35 @@ a chama (assim nenhuma migration precisa hardcodar um `user_id`). Depois de
 logar no app pela primeira vez, a tela inicial mostra um botão **"Carregar
 dados iniciais"** que chama essa função uma única vez e popula o Edital
 3.244/2025 com os quesitos, itens e ações de partida.
+
+**Se você já rodou o seed antes** (versão com valores estimados) e agora vai
+rodar a migration `20260807130002` com os dados reais: apague o edital antigo
+primeiro, senão a função vê que já existe um edital com esse nome e não faz
+nada. No SQL Editor:
+
+```sql
+delete from editais where nome = 'Edital 3.244/2025';
+```
+
+(isso apaga em cascata quesitos, itens, fontes, áreas e ações vinculados a
+esse edital — o histórico de pontuação de outros editais não é afetado).
+Depois, clique de novo em "Carregar dados iniciais" no app.
+
+### Cálculo automático de pontuação
+
+Alguns itens do barema não têm valor fixo por ocorrência — o próprio edital
+define uma fórmula:
+
+- **Por carga horária** (ex.: docência): você informa as horas da fonte, e o
+  sistema calcula `horas ÷ horas_por_unidade × pontos_por_unidade`.
+- **Por período** (ex.: vínculo profissional por semestre): você informa
+  início e fim (ou marca "em andamento"), e o sistema conta quantos
+  semestres/anos civis o intervalo toca e multiplica pelo fator do item.
+
+O cálculo roda no banco (trigger `calcular_valor_fonte`), não no client — o
+formulário só mostra um preview antes de salvar. Isso é feito assim de
+propósito para o valor nunca depender de lógica duplicada entre client e
+banco.
 
 ## 3. Variáveis de ambiente
 
