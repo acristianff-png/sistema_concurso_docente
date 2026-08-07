@@ -138,6 +138,38 @@ npm run preview # serve o build localmente para conferir
 3. Adicione as mesmas variáveis de ambiente em **Site settings →
    Environment variables**.
 
+### GitHub Pages
+
+Diferente de Vercel/Netlify, o GitHub Pages só serve arquivos estáticos, sem
+rewrite de rotas nem variáveis de ambiente em runtime — por isso o projeto já
+vem com os ajustes necessários: `vite.config.ts` define `base:
+'/sistema_concurso_docente/'` só no build de produção, `public/404.html` +
+o script no `<head>` do `index.html` simulam o rewrite de rotas (truque
+padrão de SPA no GitHub Pages), e o `BrowserRouter` usa
+`basename={import.meta.env.BASE_URL}` para casar com esse subcaminho.
+
+1. **Gerar as credenciais como Secrets do repositório** (o build roda no
+   GitHub, não na sua máquina, então as variáveis de ambiente precisam estar
+   lá): no repositório, vá em **Settings → Secrets and variables → Actions
+   → New repository secret** e crie:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY` (a *publishable key*, que é segura para
+     expor publicamente — mas usar Secret aqui evita deixá-la hardcoded no
+     workflow)
+2. **Habilitar o Pages com origem "GitHub Actions"**: **Settings → Pages →
+   Build and deployment → Source → GitHub Actions**.
+3. **Dar um push** na branch configurada no workflow
+   (`.github/workflows/deploy-gh-pages.yml` — por padrão
+   `claude/barema-tracking-platform-crtmna`; troque para `main` quando
+   mesclar). O Actions builda e publica automaticamente. Também dá pra
+   disparar manualmente em **Actions → Deploy no GitHub Pages → Run
+   workflow**.
+4. O site fica em `https://SEU-USUARIO.github.io/sistema_concurso_docente/`.
+
+Se o repositório tiver outro nome (não `sistema_concurso_docente`), ajuste o
+valor de `base` em `vite.config.ts`, o `pathSegmentsToKeep` em
+`public/404.html` e a URL final acima.
+
 ## Modelo de dados
 
 Ver `supabase/migrations/20260807120001_schema.sql` para o schema completo.

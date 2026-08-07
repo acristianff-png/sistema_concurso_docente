@@ -37,9 +37,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: error?.message ?? null }
     },
     signInWithMagicLink: async (email) => {
+      // BASE_URL inclui o subcaminho do GitHub Pages (ex.: /sistema_concurso_docente/)
+      // — sem isso o link mágico voltaria pra raiz do domínio, fora do app.
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: window.location.origin },
+        options: { emailRedirectTo: window.location.origin + import.meta.env.BASE_URL },
       })
       return { error: error?.message ?? null }
     },

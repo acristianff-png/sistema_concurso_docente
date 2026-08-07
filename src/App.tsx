@@ -80,7 +80,9 @@ function AppRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
+    // BASE_URL casa com o `base` do vite.config.ts ("/" em dev,
+    // "/sistema_concurso_docente/" no build de produção pro GitHub Pages).
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AuthProvider>
         <ToastProvider>
           <SimulacaoProvider>

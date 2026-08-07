@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecionando…</title>
+    <script>
+      // GitHub Pages não tem rewrite de rotas (diferente de Vercel/Netlify).
+      // Esse truque converte a URL acessada diretamente (ex.: /barema) em
+      // uma query string que o index.html decodifica de volta antes do
+      // React Router montar. Ver https://github.com/rafgraph/spa-github-pages
+      var pathSegmentsToKeep = 1 // "/sistema_concurso_docente/"
+      var l = window.location
+      l.replace(
+        l.protocol +
+          '//' +
+          l.hostname +
+          (l.port ? ':' + l.port : '') +
+          l.pathname
+            .split('/')
+            .slice(0, 1 + pathSegmentsToKeep)
+            .join('/') +
+          '/?/' +
+          l.pathname
+            .slice(1)
+            .split('/')
+            .slice(pathSegmentsToKeep)
+            .join('/')
+            .replace(/&/g, '~and~') +
+          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash,
+      )
+    </script>
+  </head>
+  <body></body>
+</html>
