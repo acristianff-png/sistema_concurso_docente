@@ -1,0 +1,17 @@
+/*
+ * Design tokens — AM Mentoria
+ * Fonte da verdade da paleta (espelhada em tailwind.config.ts).
+ * Alterar aqui e no tailwind.config.ts juntos.
+ */
+:root {
+  --color-teal-dark: #0b3b32;
+  --color-coral: #d2551f;
+  --color-coral-dark: #a8410f;
+  --color-paper: #f1f3ee;
+  --color-mustard: #f4c430;
+  --color-ink: #14201c;
+
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-mono: 'Space Mono', ui-monospace, SFMono-Regular, monospace;
+  --font-sans: 'Work Sans', ui-sans-serif, system-ui, sans-serif;
+}
