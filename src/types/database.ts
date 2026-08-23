@@ -31,12 +31,13 @@ export interface ItemBarema {
   nome: string
   unidade: number
   pontuacao_maxima: number
+  /** Apenas referência exibida na tela (badge/regra do edital) — não calcula mais o valor das fontes. */
   modo_calculo: ModoCalculo
-  /** Só usado quando modo_calculo = 'carga_horaria': tamanho do bloco de horas (ex.: 15). */
+  /** Referência: tamanho do bloco de horas (ex.: 15), só exibido quando modo_calculo = 'carga_horaria'. */
   horas_por_unidade: number | null
-  /** Pontos por bloco de horas (carga_horaria) ou por período (periodo). */
+  /** Referência: pontos por bloco de horas ou por período, exibido junto da regra do item. */
   pontos_por_unidade: number | null
-  /** Só usado quando modo_calculo = 'periodo'. */
+  /** Referência, só exibida quando modo_calculo = 'periodo'. */
   unidade_periodo: UnidadePeriodo | null
   created_at: string
   updated_at: string
@@ -50,9 +51,9 @@ export interface FontePontuacao {
   link: string | null
   data_referencia: string | null
   confirmado: boolean
-  /** Preenchido quando o item pai é modo_calculo = 'carga_horaria'; o valor é calculado pelo banco. */
+  /** Histórico/referência apenas — não é mais usado para calcular valor. */
   carga_horaria_horas: number | null
-  /** Preenchidos quando o item pai é modo_calculo = 'periodo'. data_fim nulo = em andamento (calcula até hoje). */
+  /** Histórico/referência apenas. data_fim nulo = vínculo em andamento. */
   data_inicio: string | null
   data_fim: string | null
   created_at: string

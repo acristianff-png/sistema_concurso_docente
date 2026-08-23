@@ -71,12 +71,15 @@ No **SQL Editor** do painel do Supabase, rode os arquivos de
 4. `20260807120004_duplicar_edital.sql` — define a função
    `duplicar_edital_para_novo()`, usada pelo botão "Duplicar estrutura para
    novo edital" na página de Histórico
-5. `20260807130001_calculo_automatico.sql` — cálculo automático de pontuação
-   por carga horária ou por período (semestre/ano), conforme o modo de cada
-   item do barema
+5. `20260807130001_calculo_automatico.sql` — histórico: introduziu (e depois a
+   migration 7 removeu) o cálculo automático de pontuação por carga horária ou
+   por período
 6. `20260807130002_seed_dados_reais.sql` — substitui `seed_dados_iniciais()`
    pelos valores oficiais do edital e pelas experiências reais do currículo
    (ver nota abaixo se você já rodou o seed antigo)
+7. `20260807130003_pontuacao_manual.sql` — remove o cálculo automático: a
+   pontuação de toda fonte passa a ser sempre digitada manualmente (ver
+   [Pontuação manual](#pontuação-manual) abaixo)
 
 Alternativamente, se preferir usar o [Supabase CLI](https://supabase.com/docs/guides/cli):
 
@@ -107,21 +110,23 @@ delete from editais where nome = 'Edital 3.244/2025';
 esse edital — o histórico de pontuação de outros editais não é afetado).
 Depois, clique de novo em "Carregar dados iniciais" no app.
 
-### Cálculo automático de pontuação
+### Pontuação manual
 
-Alguns itens do barema não têm valor fixo por ocorrência — o próprio edital
-define uma fórmula:
+Toda fonte de pontuação tem seu valor **digitado manualmente** por quem usa o
+app — o sistema não calcula nada sozinho, nem de forma proporcional (ex.: um
+item "1 ponto a cada 6 meses" não gera 0.5 ponto para 3 meses; ou atende o
+bloco inteiro, ou não pontua).
 
-- **Por carga horária** (ex.: docência): você informa as horas da fonte, e o
-  sistema calcula `horas ÷ horas_por_unidade × pontos_por_unidade`.
-- **Por período** (ex.: vínculo profissional por semestre): você informa
-  início e fim (ou marca "em andamento"), e o sistema conta quantos
-  semestres/anos civis o intervalo toca e multiplica pelo fator do item.
+Alguns itens do barema ainda carregam a regra original do edital como
+**referência visual** (badge "carga horária"/"período" no `ItemRow`, e o
+texto "Regra do edital: X pt a cada Yh" no formulário de nova fonte) — isso
+só lembra a regra enquanto você decide quantos pontos aquela fonte vale; não
+influencia o valor salvo.
 
-O cálculo roda no banco (trigger `calcular_valor_fonte`), não no client — o
-formulário só mostra um preview antes de salvar. Isso é feito assim de
-propósito para o valor nunca depender de lógica duplicada entre client e
-banco.
+Antes da migration `20260807130003_pontuacao_manual.sql`, havia um cálculo
+automático no banco (trigger `calcular_valor_fonte`, migration
+`20260807130001`) por carga horária ou por período. Foi removido a pedido:
+além de nunca fracionar pontos, o controle final é sempre do usuário.
 
 ## 3. Variáveis de ambiente
 
