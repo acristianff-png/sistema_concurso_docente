@@ -43,6 +43,7 @@ export function BaremaPage() {
               isLast={idx === quesitos.length - 1}
               mostrarProjecao={mostrarProjecao}
               onAddFonte={addFonte}
+              onUpdateFonte={updateFonte}
               onToggleConfirmado={(fonteId, confirmado) => updateFonte(fonteId, { confirmado })}
               onDeleteFonte={deleteFonte}
             />

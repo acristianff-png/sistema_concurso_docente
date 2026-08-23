@@ -9,6 +9,7 @@ interface QuesitoSectionProps {
   isLast: boolean
   mostrarProjecao: boolean
   onAddFonte: (itemId: string, fonte: NovaFonte) => Promise<void>
+  onUpdateFonte: (fonteId: string, fonte: NovaFonte) => Promise<void>
   onToggleConfirmado: (fonteId: string, confirmado: boolean) => void
   onDeleteFonte: (fonteId: string) => void
 }
@@ -19,6 +20,7 @@ export function QuesitoSection({
   isLast,
   mostrarProjecao,
   onAddFonte,
+  onUpdateFonte,
   onToggleConfirmado,
   onDeleteFonte,
 }: QuesitoSectionProps) {
@@ -58,6 +60,7 @@ export function QuesitoSection({
               item={item}
               mostrarProjecao={mostrarProjecao}
               onAddFonte={onAddFonte}
+              onUpdateFonte={onUpdateFonte}
               onToggleConfirmado={onToggleConfirmado}
               onDeleteFonte={onDeleteFonte}
             />

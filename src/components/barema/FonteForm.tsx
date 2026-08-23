@@ -2,17 +2,27 @@ import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/brand'
 import type { NovaFonte } from '@/hooks/useBarema'
 
-interface AddFonteFormProps {
+interface FonteFormInitial {
+  descricao: string
+  valor: number
+  link: string | null
+  data_referencia: string | null
+  confirmado: boolean
+}
+
+interface FonteFormProps {
+  initial?: FonteFormInitial
+  submitLabel?: string
   onSubmit: (fonte: NovaFonte) => Promise<void>
   onCancel: () => void
 }
 
-export function AddFonteForm({ onSubmit, onCancel }: AddFonteFormProps) {
-  const [descricao, setDescricao] = useState('')
-  const [valor, setValor] = useState('')
-  const [link, setLink] = useState('')
-  const [dataReferencia, setDataReferencia] = useState('')
-  const [confirmado, setConfirmado] = useState(true)
+export function FonteForm({ initial, submitLabel = 'Adicionar fonte', onSubmit, onCancel }: FonteFormProps) {
+  const [descricao, setDescricao] = useState(initial?.descricao ?? '')
+  const [valor, setValor] = useState(initial ? String(initial.valor).replace('.', ',') : '')
+  const [link, setLink] = useState(initial?.link ?? '')
+  const [dataReferencia, setDataReferencia] = useState(initial?.data_referencia ?? '')
+  const [confirmado, setConfirmado] = useState(initial?.confirmado ?? true)
   const [submitting, setSubmitting] = useState(false)
 
   async function handleSubmit(e: FormEvent) {
@@ -56,7 +66,7 @@ export function AddFonteForm({ onSubmit, onCancel }: AddFonteFormProps) {
         />
         <input
           type="date"
-          value={dataReferencia}
+          value={dataReferencia ?? ''}
           onChange={(e) => setDataReferencia(e.target.value)}
           className="rounded border border-ink/20 px-2 py-1.5 text-sm"
         />
@@ -65,7 +75,7 @@ export function AddFonteForm({ onSubmit, onCancel }: AddFonteFormProps) {
       <input
         type="url"
         placeholder="Link (Drive/Lattes/DOI)"
-        value={link}
+        value={link ?? ''}
         onChange={(e) => setLink(e.target.value)}
         className="rounded border border-ink/20 px-2 py-1.5 text-sm"
       />
@@ -81,7 +91,7 @@ export function AddFonteForm({ onSubmit, onCancel }: AddFonteFormProps) {
       </label>
       <div className="flex gap-2">
         <Button type="submit" size="sm" disabled={submitting}>
-          {submitting ? 'Salvando…' : 'Adicionar fonte'}
+          {submitting ? 'Salvando…' : submitLabel}
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
           Cancelar

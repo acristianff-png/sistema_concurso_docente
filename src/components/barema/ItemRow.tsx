@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ProgressBar } from '@/components/brand'
 import { FonteList } from './FonteList'
-import { AddFonteForm } from './AddFonteForm'
+import { FonteForm } from './FonteForm'
 import { totalItem, type ItemComFontes } from '@/types/domain'
 import type { NovaFonte } from '@/hooks/useBarema'
 import { cn } from '@/utils/cn'
@@ -10,11 +10,19 @@ interface ItemRowProps {
   item: ItemComFontes
   mostrarProjecao: boolean
   onAddFonte: (itemId: string, fonte: NovaFonte) => Promise<void>
+  onUpdateFonte: (fonteId: string, fonte: NovaFonte) => Promise<void>
   onToggleConfirmado: (fonteId: string, confirmado: boolean) => void
   onDeleteFonte: (fonteId: string) => void
 }
 
-export function ItemRow({ item, mostrarProjecao, onAddFonte, onToggleConfirmado, onDeleteFonte }: ItemRowProps) {
+export function ItemRow({
+  item,
+  mostrarProjecao,
+  onAddFonte,
+  onUpdateFonte,
+  onToggleConfirmado,
+  onDeleteFonte,
+}: ItemRowProps) {
   const [expanded, setExpanded] = useState(false)
   const [addingFonte, setAddingFonte] = useState(false)
 
@@ -51,11 +59,16 @@ export function ItemRow({ item, mostrarProjecao, onAddFonte, onToggleConfirmado,
 
       {expanded ? (
         <div className="ml-3 mt-1 border-l-2 border-teal-dark/20 py-1 pl-4">
-          <FonteList fontes={item.fontes_pontuacao} onToggleConfirmado={onToggleConfirmado} onDelete={onDeleteFonte} />
+          <FonteList
+            fontes={item.fontes_pontuacao}
+            onUpdate={onUpdateFonte}
+            onToggleConfirmado={onToggleConfirmado}
+            onDelete={onDeleteFonte}
+          />
 
           {addingFonte ? (
             <div className="mt-2">
-              <AddFonteForm
+              <FonteForm
                 onSubmit={async (fonte) => {
                   await onAddFonte(item.id, fonte)
                   setAddingFonte(false)
