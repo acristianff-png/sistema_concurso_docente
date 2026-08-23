@@ -4,6 +4,7 @@ import { FonteList } from './FonteList'
 import { AddFonteForm } from './AddFonteForm'
 import { totalItem, type ItemComFontes } from '@/types/domain'
 import type { NovaFonte } from '@/hooks/useBarema'
+import { cn } from '@/utils/cn'
 
 const MODO_LABEL = {
   carga_horaria: 'carga horária',
@@ -26,16 +27,19 @@ export function ItemRow({ item, mostrarProjecao, onAddFonte, onToggleConfirmado,
   const projetado = totalItem(item, true)
 
   return (
-    <div className="border-t border-ink/10 py-3">
+    <div className="border-t border-ink/10 py-1.5 first:border-t-0">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center justify-between gap-4 text-left"
+        className={cn(
+          'flex w-full items-center justify-between gap-4 rounded-md px-2.5 py-2 text-left transition-colors',
+          expanded ? 'bg-teal-dark/10' : 'hover:bg-teal-dark/5',
+        )}
       >
-        <span className="flex items-center gap-2 text-sm font-medium text-ink">
+        <span className="flex items-center gap-2 text-sm font-semibold text-teal-dark">
           {item.nome}
           {item.modo_calculo !== 'manual' ? (
-            <Badge tone="neutral">{MODO_LABEL[item.modo_calculo]}</Badge>
+            <Badge tone="teal">{MODO_LABEL[item.modo_calculo]}</Badge>
           ) : null}
         </span>
         <span className="flex items-center gap-3">
@@ -56,7 +60,7 @@ export function ItemRow({ item, mostrarProjecao, onAddFonte, onToggleConfirmado,
       </button>
 
       {expanded ? (
-        <div className="mt-3 pl-1">
+        <div className="ml-3 mt-1 border-l-2 border-teal-dark/20 py-1 pl-4">
           <FonteList fontes={item.fontes_pontuacao} onToggleConfirmado={onToggleConfirmado} onDelete={onDeleteFonte} />
 
           {addingFonte ? (
