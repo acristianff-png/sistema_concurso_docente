@@ -1,34 +1,19 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/brand'
-import type { ItemBarema } from '@/types/database'
 import type { NovaFonte } from '@/hooks/useBarema'
 
 interface AddFonteFormProps {
-  item: ItemBarema
   onSubmit: (fonte: NovaFonte) => Promise<void>
   onCancel: () => void
 }
 
-/** Texto de referência da regra do edital para o item — só informativo, não é usado em nenhum cálculo. */
-function regraReferencia(item: ItemBarema): string | null {
-  if (item.modo_calculo === 'carga_horaria' && item.horas_por_unidade && item.pontos_por_unidade) {
-    return `Regra do edital: ${item.pontos_por_unidade} pt a cada ${item.horas_por_unidade}h`
-  }
-  if (item.modo_calculo === 'periodo' && item.unidade_periodo && item.pontos_por_unidade) {
-    return `Regra do edital: ${item.pontos_por_unidade} pt por ${item.unidade_periodo}`
-  }
-  return null
-}
-
-export function AddFonteForm({ item, onSubmit, onCancel }: AddFonteFormProps) {
+export function AddFonteForm({ onSubmit, onCancel }: AddFonteFormProps) {
   const [descricao, setDescricao] = useState('')
   const [valor, setValor] = useState('')
   const [link, setLink] = useState('')
   const [dataReferencia, setDataReferencia] = useState('')
   const [confirmado, setConfirmado] = useState(true)
   const [submitting, setSubmitting] = useState(false)
-
-  const regra = regraReferencia(item)
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -58,8 +43,6 @@ export function AddFonteForm({ item, onSubmit, onCancel }: AddFonteFormProps) {
         required
         className="rounded border border-ink/20 px-2 py-1.5 text-sm"
       />
-
-      {regra ? <span className="font-mono text-xs text-ink/60">{regra} — informe os pontos que essa fonte vale</span> : null}
 
       <div className="flex flex-wrap gap-2">
         <input
