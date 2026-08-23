@@ -1,6 +1,6 @@
 import { StepNumber, DashedConnector, ProgressBar, NoticeBox } from '@/components/brand'
 import { ItemRow } from './ItemRow'
-import { totalQuesito, type QuesitoComItens } from '@/types/domain'
+import { totalQuesito, margemQuesito, type QuesitoComItens } from '@/types/domain'
 import type { NovaFonte } from '@/hooks/useBarema'
 
 interface QuesitoSectionProps {
@@ -26,6 +26,7 @@ export function QuesitoSection({
 }: QuesitoSectionProps) {
   const confirmado = totalQuesito(quesito, false)
   const projetado = totalQuesito(quesito, true)
+  const margem = margemQuesito(quesito, mostrarProjecao)
   const noTeto = confirmado >= quesito.teto
 
   return (
@@ -46,6 +47,13 @@ export function QuesitoSection({
           max={quesito.teto}
           projetadoValue={mostrarProjecao ? projetado : undefined}
         />
+
+        {margem > 0 ? (
+          <p className="mt-1.5 font-mono text-xs text-teal-dark">
+            Margem de {margem.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} pt
+            {margem !== 1 ? 's' : ''} além do teto — folga se alguma fonte não for aceita.
+          </p>
+        ) : null}
 
         {noTeto ? (
           <NoticeBox label="No teto" className="mt-3">

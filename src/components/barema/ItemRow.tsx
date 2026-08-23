@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ProgressBar } from '@/components/brand'
 import { FonteList } from './FonteList'
 import { FonteForm } from './FonteForm'
-import { totalItem, type ItemComFontes } from '@/types/domain'
+import { totalItem, margemItem, type ItemComFontes } from '@/types/domain'
 import type { NovaFonte } from '@/hooks/useBarema'
 import { cn } from '@/utils/cn'
 
@@ -28,6 +28,7 @@ export function ItemRow({
 
   const confirmado = totalItem(item, false)
   const projetado = totalItem(item, true)
+  const margem = margemItem(item, mostrarProjecao)
 
   return (
     <div className="border-t border-ink/10 py-1.5 first:border-t-0">
@@ -53,6 +54,14 @@ export function ItemRow({
             {(mostrarProjecao ? projetado : confirmado).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} /{' '}
             {item.pontuacao_maxima}
           </span>
+          {margem > 0 ? (
+            <span
+              className="font-mono text-[10px] font-bold text-teal-dark"
+              title="Pontos já confirmados além do teto do item — folga se alguma fonte não for aceita"
+            >
+              +{margem.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} de margem
+            </span>
+          ) : null}
           <span className="text-ink/40">{expanded ? '−' : '+'}</span>
         </span>
       </button>
