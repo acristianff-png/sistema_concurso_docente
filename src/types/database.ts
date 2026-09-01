@@ -39,6 +39,8 @@ export interface ItemBarema {
   pontos_por_unidade: number | null
   /** Referência, só exibida quando modo_calculo = 'periodo'. */
   unidade_periodo: UnidadePeriodo | null
+  /** Texto do critério de pontuação, copiado do edital — só informativo. */
+  criterio_edital: string | null
   created_at: string
   updated_at: string
 }
@@ -205,6 +207,7 @@ export interface Database {
           horas_por_unidade: number | null
           pontos_por_unidade: number | null
           unidade_periodo: UnidadePeriodo | null
+          criterio_edital: string | null
           created_at: string
           updated_at: string
         }
@@ -218,6 +221,7 @@ export interface Database {
           horas_por_unidade?: number | null
           pontos_por_unidade?: number | null
           unidade_periodo?: UnidadePeriodo | null
+          criterio_edital?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -231,6 +235,7 @@ export interface Database {
           horas_por_unidade?: number | null
           pontos_por_unidade?: number | null
           unidade_periodo?: UnidadePeriodo | null
+          criterio_edital?: string | null
           created_at?: string
           updated_at?: string
         }

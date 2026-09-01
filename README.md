@@ -80,6 +80,10 @@ No **SQL Editor** do painel do Supabase, rode os arquivos de
 7. `20260807130003_pontuacao_manual.sql` — remove o cálculo automático: a
    pontuação de toda fonte passa a ser sempre digitada manualmente (ver
    [Pontuação manual](#pontuação-manual) abaixo)
+8. `20260807140001_criterio_edital.sql` — adiciona a descrição do critério
+   de pontuação de cada item (texto do edital), preenchida automaticamente
+   por um trigger — não precisa reseedar para os itens já existentes, essa
+   migration já faz o backfill sozinha
 
 Alternativamente, se preferir usar o [Supabase CLI](https://supabase.com/docs/guides/cli):
 
@@ -117,11 +121,13 @@ app — o sistema não calcula nada sozinho, nem de forma proporcional (ex.: um
 item "1 ponto a cada 6 meses" não gera 0.5 ponto para 3 meses; ou atende o
 bloco inteiro, ou não pontua).
 
-Alguns itens do barema ainda carregam a regra original do edital como
-**referência visual** (badge "carga horária"/"período" no `ItemRow`, e o
-texto "Regra do edital: X pt a cada Yh" no formulário de nova fonte) — isso
-só lembra a regra enquanto você decide quantos pontos aquela fonte vale; não
-influencia o valor salvo.
+Cada item mostra o critério de pontuação do edital (`criterio_edital` —
+migration `20260807140001`) como subtítulo no `ItemRow`, e por extenso ao
+expandir — isso só lembra a regra enquanto você decide quantos pontos aquela
+fonte vale; não influencia o valor salvo. O badge "carga horária"/"período"
+e o texto "Regra do edital: X pt a cada Yh" que existiam antes no formulário
+foram removidos (o `criterio_edital` cobre a mesma necessidade, com o texto
+literal do edital em vez de uma fórmula).
 
 Antes da migration `20260807130003_pontuacao_manual.sql`, havia um cálculo
 automático no banco (trigger `calcular_valor_fonte`, migration
@@ -235,7 +241,9 @@ Todas as tabelas têm RLS restringindo as linhas ao usuário autenticado
 - **Dashboard** — pontuação total e por quesito, aviso de "quesito no teto",
   gráfico de evolução
 - **Barema** — quesitos numerados e conectados por uma linha tracejada,
-  itens expansíveis com suas fontes de pontuação
+  itens expansíveis com suas fontes de pontuação; cada item mostra o
+  critério de pontuação do edital (quanto vale, por quê) sem precisar abrir
+  o PDF, e itens por carga horária/período calculam o valor automaticamente
 - **Modo simulação** — toggle global que soma também fontes não confirmadas
   (projeção), sempre visualmente distinto do valor confirmado
 - **Plano de ação (kanban)** — 3 colunas com drag-and-drop, badges de

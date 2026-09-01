@@ -36,12 +36,17 @@ export function ItemRow({
         type="button"
         onClick={() => setExpanded((v) => !v)}
         className={cn(
-          'flex w-full items-center justify-between gap-4 rounded-md px-2.5 py-2 text-left transition-colors',
+          'flex w-full items-start justify-between gap-4 rounded-md px-2.5 py-2 text-left transition-colors',
           expanded ? 'bg-teal-dark/10' : 'hover:bg-teal-dark/5',
         )}
       >
-        <span className="flex items-center gap-2 text-sm font-semibold text-teal-dark">{item.nome}</span>
-        <span className="flex items-center gap-3">
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="flex items-center gap-2 text-sm font-semibold text-teal-dark">{item.nome}</span>
+          {item.criterio_edital ? (
+            <span className="line-clamp-2 text-xs text-ink/50">{item.criterio_edital}</span>
+          ) : null}
+        </span>
+        <span className="flex shrink-0 items-center gap-3">
           <span className="w-32">
             <ProgressBar
               value={confirmado}
@@ -68,6 +73,10 @@ export function ItemRow({
 
       {expanded ? (
         <div className="ml-3 mt-1 border-l-2 border-teal-dark/20 py-1 pl-4">
+          {item.criterio_edital ? (
+            <p className="mb-3 rounded-md bg-paper px-3 py-2 font-mono text-xs text-ink/70">{item.criterio_edital}</p>
+          ) : null}
+
           <FonteList
             fontes={item.fontes_pontuacao}
             onUpdate={onUpdateFonte}
