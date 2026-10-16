@@ -13,8 +13,17 @@ export function EditalEstruturaPage() {
   const [edital, setEdital] = useState<Edital | null>(null)
   const [loadingEdital, setLoadingEdital] = useState(true)
 
-  const { quesitos, loading, criarQuesito, atualizarQuesito, excluirQuesito, criarItem, atualizarItem, excluirItem } =
-    useEstrutura(editalId ?? null)
+  const {
+    quesitos,
+    loading,
+    criarQuesito,
+    atualizarQuesito,
+    excluirQuesito,
+    criarItem,
+    atualizarItem,
+    excluirItem,
+    moverItem,
+  } = useEstrutura(editalId ?? null)
 
   useEffect(() => {
     if (!editalId) return
@@ -66,6 +75,7 @@ export function EditalEstruturaPage() {
               onCriarItem={(item) => criarItem(quesito.id, item)}
               onAtualizarItem={(itemId, item) => atualizarItem(itemId, item)}
               onExcluirItem={(itemId) => excluirItem(itemId)}
+              onMoverItem={(itemId, direcao) => moverItem(quesito.id, itemId, direcao)}
             />
           ))}
         </div>

@@ -12,6 +12,7 @@ interface QuesitoEditorProps {
   onCriarItem: (item: NovoItemBarema) => Promise<void>
   onAtualizarItem: (itemId: string, item: NovoItemBarema) => Promise<void>
   onExcluirItem: (itemId: string) => Promise<void>
+  onMoverItem: (itemId: string, direcao: 'up' | 'down') => Promise<void>
 }
 
 export function QuesitoEditor({
@@ -22,6 +23,7 @@ export function QuesitoEditor({
   onCriarItem,
   onAtualizarItem,
   onExcluirItem,
+  onMoverItem,
 }: QuesitoEditorProps) {
   const [editandoQuesito, setEditandoQuesito] = useState(false)
   const [nome, setNome] = useState(quesito.nome)
@@ -101,12 +103,16 @@ export function QuesitoEditor({
       ) : null}
 
       <ul className="flex flex-col">
-        {quesito.itens_barema.map((item) => (
+        {quesito.itens_barema.map((item, idx) => (
           <ItemEditorRow
             key={item.id}
             item={item}
             onUpdate={(patch) => onAtualizarItem(item.id, patch)}
             onDelete={() => onExcluirItem(item.id)}
+            onMoveUp={() => onMoverItem(item.id, 'up')}
+            onMoveDown={() => onMoverItem(item.id, 'down')}
+            isFirst={idx === 0}
+            isLast={idx === quesito.itens_barema.length - 1}
           />
         ))}
         {quesito.itens_barema.length === 0 ? (

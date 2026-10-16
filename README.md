@@ -84,6 +84,9 @@ No **SQL Editor** do painel do Supabase, rode os arquivos de
    de pontuação de cada item (texto do edital), preenchida automaticamente
    por um trigger — não precisa reseedar para os itens já existentes, essa
    migration já faz o backfill sozinha
+9. `20261016150001_ordem_itens_barema.sql` — adiciona a coluna `ordem` em
+   `itens_barema` (backfill pela ordem de criação atual) para reordenar os
+   itens dentro de cada quesito pelas setas ↑/↓ em `/editais/:id`
 
 Alternativamente, se preferir usar o [Supabase CLI](https://supabase.com/docs/guides/cli):
 
@@ -258,7 +261,10 @@ Todas as tabelas têm RLS restringindo as linhas ao usuário autenticado
   branco ou duplicando a estrutura de outro, editar nome/data/observações e
   excluir. Em `/editais/:id` dá pra editar a estrutura do edital em si —
   adicionar, editar e remover quesitos e os itens que pontuam em cada um
-  (nome, valor unitário, teto, critério do edital) — sem precisar de SQL
+  (nome, valor unitário, teto, critério do edital) — sem precisar de SQL.
+  Cada item tem setas ↑/↓ para reordenar dentro do quesito, deixando a
+  lista na sequência exata do documento oficial do edital; essa ordem é a
+  mesma usada na tela `/barema`
 
 ## Licença
 

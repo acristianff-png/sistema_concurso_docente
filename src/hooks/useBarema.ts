@@ -45,12 +45,14 @@ export function useBarema(editalId: string | null): UseBaremaResult {
     } else {
       const ordenado = (data as unknown as QuesitoComItens[]).map((q) => ({
         ...q,
-        itens_barema: q.itens_barema.map((item) => ({
-          ...item,
-          fontes_pontuacao: [...item.fontes_pontuacao].sort(
-            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-          ),
-        })),
+        itens_barema: [...q.itens_barema]
+          .sort((a, b) => a.ordem - b.ordem)
+          .map((item) => ({
+            ...item,
+            fontes_pontuacao: [...item.fontes_pontuacao].sort(
+              (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+            ),
+          })),
       }))
       setQuesitos(ordenado)
     }

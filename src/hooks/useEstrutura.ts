@@ -30,6 +30,7 @@ interface UseEstruturaResult {
   criarItem: (quesitoId: string, item: NovoItemBarema) => Promise<void>
   atualizarItem: (id: string, patch: Partial<NovoItemBarema>) => Promise<void>
   excluirItem: (id: string) => Promise<void>
+  moverItem: (quesitoId: string, itemId: string, direcao: 'up' | 'down') => Promise<void>
 }
 
 /**
@@ -58,7 +59,11 @@ export function useEstrutura(editalId: string | null): UseEstruturaResult {
     if (error) {
       showError(`Erro ao carregar a estrutura do edital: ${error.message}`)
     } else {
-      setQuesitos(data as unknown as QuesitoComItensBarema[])
+      const ordenado = (data as unknown as QuesitoComItensBarema[]).map((q) => ({
+        ...q,
+        itens_barema: [...q.itens_barema].sort((a, b) => a.ordem - b.ordem),
+      }))
+      setQuesitos(ordenado)
     }
     setLoading(false)
   }, [editalId, showError])
@@ -118,12 +123,19 @@ export function useEstrutura(editalId: string | null): UseEstruturaResult {
 
   const criarItem = useCallback(
     async (quesitoId: string, item: NovoItemBarema) => {
+      const quesito = quesitos.find((q) => q.id === quesitoId)
+      const proximaOrdem =
+        quesito && quesito.itens_barema.length > 0
+          ? Math.max(...quesito.itens_barema.map((i) => i.ordem)) + 1
+          : 1
+
       const { error } = await supabase.from('itens_barema').insert({
         quesito_id: quesitoId,
         nome: item.nome,
         unidade: item.unidade,
         pontuacao_maxima: item.pontuacao_maxima,
         criterio_edital: item.criterio_edital ?? null,
+        ordem: proximaOrdem,
       })
       if (error) {
         showError(`Erro ao criar item: ${error.message}`)
@@ -131,7 +143,7 @@ export function useEstrutura(editalId: string | null): UseEstruturaResult {
       }
       await refetch()
     },
-    [refetch, showError],
+    [quesitos, refetch, showError],
   )
 
   const atualizarItem = useCallback(
@@ -175,6 +187,51 @@ export function useEstrutura(editalId: string | null): UseEstruturaResult {
     [quesitos, refetch, showError],
   )
 
+  const moverItem = useCallback(
+    async (quesitoId: string, itemId: string, direcao: 'up' | 'down') => {
+      const quesito = quesitos.find((q) => q.id === quesitoId)
+      if (!quesito) return
+
+      const idx = quesito.itens_barema.findIndex((i) => i.id === itemId)
+      const vizinhoIdx = direcao === 'up' ? idx - 1 : idx + 1
+      if (idx === -1 || vizinhoIdx < 0 || vizinhoIdx >= quesito.itens_barema.length) return
+
+      const item = quesito.itens_barema[idx]
+      const vizinho = quesito.itens_barema[vizinhoIdx]
+
+      const snapshot = quesitos
+      setQuesitos((prev) =>
+        prev.map((q) =>
+          q.id !== quesitoId
+            ? q
+            : {
+                ...q,
+                itens_barema: [...q.itens_barema]
+                  .map((i) => {
+                    if (i.id === item.id) return { ...i, ordem: vizinho.ordem }
+                    if (i.id === vizinho.id) return { ...i, ordem: item.ordem }
+                    return i
+                  })
+                  .sort((a, b) => a.ordem - b.ordem),
+              },
+        ),
+      )
+
+      const [{ error: erro1 }, { error: erro2 }] = await Promise.all([
+        supabase.from('itens_barema').update({ ordem: vizinho.ordem }).eq('id', item.id),
+        supabase.from('itens_barema').update({ ordem: item.ordem }).eq('id', vizinho.id),
+      ])
+
+      if (erro1 || erro2) {
+        setQuesitos(snapshot)
+        showError(`Erro ao reordenar item: ${(erro1 ?? erro2)?.message}`)
+        return
+      }
+      await refetch()
+    },
+    [quesitos, refetch, showError],
+  )
+
   return {
     quesitos,
     loading,
@@ -185,5 +242,6 @@ export function useEstrutura(editalId: string | null): UseEstruturaResult {
     criarItem,
     atualizarItem,
     excluirItem,
+    moverItem,
   }
 }

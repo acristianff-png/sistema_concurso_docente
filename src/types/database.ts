@@ -31,6 +31,8 @@ export interface ItemBarema {
   nome: string
   unidade: number
   pontuacao_maxima: number
+  /** Posição do item dentro do quesito, na sequência exata do edital. */
+  ordem: number
   /** Apenas referência exibida na tela (badge/regra do edital) — não calcula mais o valor das fontes. */
   modo_calculo: ModoCalculo
   /** Referência: tamanho do bloco de horas (ex.: 15), só exibido quando modo_calculo = 'carga_horaria'. */
@@ -203,6 +205,7 @@ export interface Database {
           nome: string
           unidade: number
           pontuacao_maxima: number
+          ordem: number
           modo_calculo: ModoCalculo
           horas_por_unidade: number | null
           pontos_por_unidade: number | null
@@ -217,6 +220,7 @@ export interface Database {
           nome: string
           unidade?: number
           pontuacao_maxima: number
+          ordem?: number
           modo_calculo?: ModoCalculo
           horas_por_unidade?: number | null
           pontos_por_unidade?: number | null
@@ -231,6 +235,7 @@ export interface Database {
           nome?: string
           unidade?: number
           pontuacao_maxima?: number
+          ordem?: number
           modo_calculo?: ModoCalculo
           horas_por_unidade?: number | null
           pontos_por_unidade?: number | null

@@ -7,9 +7,21 @@ interface ItemEditorRowProps {
   item: ItemBarema
   onUpdate: (item: NovoItemBarema) => Promise<void>
   onDelete: () => Promise<void>
+  onMoveUp: () => Promise<void>
+  onMoveDown: () => Promise<void>
+  isFirst: boolean
+  isLast: boolean
 }
 
-export function ItemEditorRow({ item, onUpdate, onDelete }: ItemEditorRowProps) {
+export function ItemEditorRow({
+  item,
+  onUpdate,
+  onDelete,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast,
+}: ItemEditorRowProps) {
   const [editando, setEditando] = useState(false)
 
   async function handleDelete() {
@@ -49,6 +61,24 @@ export function ItemEditorRow({ item, onUpdate, onDelete }: ItemEditorRowProps) 
         <span className="font-mono text-xs text-ink/60">
           {item.unidade} / teto {item.pontuacao_maxima}
         </span>
+        <button
+          type="button"
+          onClick={onMoveUp}
+          disabled={isFirst}
+          className="text-xs text-ink/60 hover:underline disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:no-underline"
+          aria-label="Mover item para cima"
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          onClick={onMoveDown}
+          disabled={isLast}
+          className="text-xs text-ink/60 hover:underline disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:no-underline"
+          aria-label="Mover item para baixo"
+        >
+          ↓
+        </button>
         <button type="button" onClick={() => setEditando(true)} className="text-xs text-ink/60 hover:underline">
           editar
         </button>
