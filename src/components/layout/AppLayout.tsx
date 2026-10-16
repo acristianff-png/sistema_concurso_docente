@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { to: '/acoes', label: 'Ações' },
   { to: '/areas', label: 'Áreas' },
   { to: '/historico', label: 'Histórico' },
+  { to: '/editais', label: 'Editais' },
 ]
 
 export function AppLayout({ children }: { children: ReactNode }) {

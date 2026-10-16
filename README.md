@@ -243,7 +243,7 @@ Todas as tabelas têm RLS restringindo as linhas ao usuário autenticado
 - **Barema** — quesitos numerados e conectados por uma linha tracejada,
   itens expansíveis com suas fontes de pontuação; cada item mostra o
   critério de pontuação do edital (quanto vale, por quê) sem precisar abrir
-  o PDF, e itens por carga horária/período calculam o valor automaticamente
+  o PDF — o valor de cada fonte é sempre digitado manualmente
 - **Modo simulação** — toggle global que soma também fontes não confirmadas
   (projeção), sempre visualmente distinto do valor confirmado
 - **Plano de ação (kanban)** — 3 colunas com drag-and-drop, badges de
@@ -252,7 +252,13 @@ Todas as tabelas têm RLS restringindo as linhas ao usuário autenticado
   automaticamente), pontuação de força 0–100 (fórmula documentada em
   `src/utils/forcaArea.ts`)
 - **Histórico** — timeline completa por quesito, exportação do memorial em
-  Markdown, duplicação de estrutura para um novo edital
+  Markdown
+- **Editais** (`/editais`) — lista todos os editais cadastrados (não só o
+  ativo), com botão para ativar qualquer um deles, criar um edital em
+  branco ou duplicando a estrutura de outro, editar nome/data/observações e
+  excluir. Em `/editais/:id` dá pra editar a estrutura do edital em si —
+  adicionar, editar e remover quesitos e os itens que pontuam em cada um
+  (nome, valor unitário, teto, critério do edital) — sem precisar de SQL
 
 ## Licença
 

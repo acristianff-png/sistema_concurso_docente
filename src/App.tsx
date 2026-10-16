@@ -10,6 +10,8 @@ import { BaremaPage } from '@/pages/BaremaPage'
 import { AcoesPage } from '@/pages/AcoesPage'
 import { AreasPage } from '@/pages/AreasPage'
 import { HistoricoPage } from '@/pages/HistoricoPage'
+import { EditaisPage } from '@/pages/EditaisPage'
+import { EditalEstruturaPage } from '@/pages/EditalEstruturaPage'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth()
@@ -70,6 +72,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <HistoricoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/editais"
+        element={
+          <ProtectedRoute>
+            <EditaisPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/editais/:editalId"
+        element={
+          <ProtectedRoute>
+            <EditalEstruturaPage />
           </ProtectedRoute>
         }
       />
