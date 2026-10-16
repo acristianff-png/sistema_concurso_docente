@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/useToast'
 import type { Edital } from '@/types/database'
@@ -14,10 +14,14 @@ interface UseEditalAtivoResult {
 export function useEditalAtivo(): UseEditalAtivoResult {
   const [edital, setEdital] = useState<Edital | null>(null)
   const [loading, setLoading] = useState(true)
+  // Só mostra o estado "carregando" na primeira carga (ou ao trocar de edital);
+  // refetches após salvar atualizam os dados em segundo plano, sem desmontar a tela.
+  const carregadoPara = useRef<string | null>(null)
   const { showError, showSuccess } = useToast()
 
   const refetch = useCallback(async () => {
-    setLoading(true)
+    if (carregadoPara.current !== 'all') setLoading(true)
+    carregadoPara.current = 'all'
     const { data, error } = await supabase
       .from('editais')
       .select('*')
