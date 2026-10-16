@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react'
+import { DndContext, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { StepNumber, Button } from '@/components/brand'
 import { ItemEditorRow } from './ItemEditorRow'
 import { ItemEditorForm } from './ItemEditorForm'
@@ -12,7 +14,7 @@ interface QuesitoEditorProps {
   onCriarItem: (item: NovoItemBarema) => Promise<void>
   onAtualizarItem: (itemId: string, item: NovoItemBarema) => Promise<void>
   onExcluirItem: (itemId: string) => Promise<void>
-  onMoverItem: (itemId: string, direcao: 'up' | 'down') => Promise<void>
+  onReordenarItens: (itemIdAtivo: string, itemIdDestino: string) => Promise<void>
 }
 
 export function QuesitoEditor({
@@ -23,12 +25,19 @@ export function QuesitoEditor({
   onCriarItem,
   onAtualizarItem,
   onExcluirItem,
-  onMoverItem,
+  onReordenarItens,
 }: QuesitoEditorProps) {
   const [editandoQuesito, setEditandoQuesito] = useState(false)
   const [nome, setNome] = useState(quesito.nome)
   const [teto, setTeto] = useState(String(quesito.teto))
   const [adicionandoItem, setAdicionandoItem] = useState(false)
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }))
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    onReordenarItens(String(active.id), String(over.id))
+  }
 
   async function handleSubmitQuesito(e: FormEvent) {
     e.preventDefault()
@@ -102,23 +111,23 @@ export function QuesitoEditor({
         </form>
       ) : null}
 
-      <ul className="flex flex-col">
-        {quesito.itens_barema.map((item, idx) => (
-          <ItemEditorRow
-            key={item.id}
-            item={item}
-            onUpdate={(patch) => onAtualizarItem(item.id, patch)}
-            onDelete={() => onExcluirItem(item.id)}
-            onMoveUp={() => onMoverItem(item.id, 'up')}
-            onMoveDown={() => onMoverItem(item.id, 'down')}
-            isFirst={idx === 0}
-            isLast={idx === quesito.itens_barema.length - 1}
-          />
-        ))}
-        {quesito.itens_barema.length === 0 ? (
-          <li className="py-2 text-sm text-ink/50">Nenhum item cadastrado neste quesito ainda.</li>
-        ) : null}
-      </ul>
+      <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+        <SortableContext items={quesito.itens_barema.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+          <ul className="flex flex-col">
+            {quesito.itens_barema.map((item) => (
+              <ItemEditorRow
+                key={item.id}
+                item={item}
+                onUpdate={(patch) => onAtualizarItem(item.id, patch)}
+                onDelete={() => onExcluirItem(item.id)}
+              />
+            ))}
+            {quesito.itens_barema.length === 0 ? (
+              <li className="py-2 text-sm text-ink/50">Nenhum item cadastrado neste quesito ainda.</li>
+            ) : null}
+          </ul>
+        </SortableContext>
+      </DndContext>
 
       {adicionandoItem ? (
         <div className="mt-2">

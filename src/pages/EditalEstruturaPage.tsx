@@ -22,7 +22,7 @@ export function EditalEstruturaPage() {
     criarItem,
     atualizarItem,
     excluirItem,
-    moverItem,
+    reordenarItens,
   } = useEstrutura(editalId ?? null)
 
   useEffect(() => {
@@ -75,7 +75,9 @@ export function EditalEstruturaPage() {
               onCriarItem={(item) => criarItem(quesito.id, item)}
               onAtualizarItem={(itemId, item) => atualizarItem(itemId, item)}
               onExcluirItem={(itemId) => excluirItem(itemId)}
-              onMoverItem={(itemId, direcao) => moverItem(quesito.id, itemId, direcao)}
+              onReordenarItens={(itemIdAtivo, itemIdDestino) =>
+                reordenarItens(quesito.id, itemIdAtivo, itemIdDestino)
+              }
             />
           ))}
         </div>

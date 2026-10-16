@@ -262,9 +262,10 @@ Todas as tabelas têm RLS restringindo as linhas ao usuário autenticado
   excluir. Em `/editais/:id` dá pra editar a estrutura do edital em si —
   adicionar, editar e remover quesitos e os itens que pontuam em cada um
   (nome, valor unitário, teto, critério do edital) — sem precisar de SQL.
-  Cada item tem setas ↑/↓ para reordenar dentro do quesito, deixando a
-  lista na sequência exata do documento oficial do edital; essa ordem é a
-  mesma usada na tela `/barema`
+  Cada item tem uma alça de arrastar (⠿) para reordenar por drag-and-drop
+  dentro do quesito (@dnd-kit, mesma lib do kanban), deixando a lista na
+  sequência exata do documento oficial do edital; essa ordem é a mesma
+  usada na tela `/barema`
 
 ## Licença
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { arrayMove } from '@dnd-kit/sortable'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/useToast'
 import type { ItemBarema, Quesito } from '@/types/database'
@@ -30,7 +31,7 @@ interface UseEstruturaResult {
   criarItem: (quesitoId: string, item: NovoItemBarema) => Promise<void>
   atualizarItem: (id: string, patch: Partial<NovoItemBarema>) => Promise<void>
   excluirItem: (id: string) => Promise<void>
-  moverItem: (quesitoId: string, itemId: string, direcao: 'up' | 'down') => Promise<void>
+  reordenarItens: (quesitoId: string, itemIdAtivo: string, itemIdDestino: string) => Promise<void>
 }
 
 /**
@@ -187,44 +188,35 @@ export function useEstrutura(editalId: string | null): UseEstruturaResult {
     [quesitos, refetch, showError],
   )
 
-  const moverItem = useCallback(
-    async (quesitoId: string, itemId: string, direcao: 'up' | 'down') => {
+  const reordenarItens = useCallback(
+    async (quesitoId: string, itemIdAtivo: string, itemIdDestino: string) => {
+      if (itemIdAtivo === itemIdDestino) return
       const quesito = quesitos.find((q) => q.id === quesitoId)
       if (!quesito) return
 
-      const idx = quesito.itens_barema.findIndex((i) => i.id === itemId)
-      const vizinhoIdx = direcao === 'up' ? idx - 1 : idx + 1
-      if (idx === -1 || vizinhoIdx < 0 || vizinhoIdx >= quesito.itens_barema.length) return
+      const activeIdx = quesito.itens_barema.findIndex((i) => i.id === itemIdAtivo)
+      const overIdx = quesito.itens_barema.findIndex((i) => i.id === itemIdDestino)
+      if (activeIdx === -1 || overIdx === -1) return
 
-      const item = quesito.itens_barema[idx]
-      const vizinho = quesito.itens_barema[vizinhoIdx]
+      const reordenado = arrayMove(quesito.itens_barema, activeIdx, overIdx).map((item, idx) => ({
+        ...item,
+        ordem: idx + 1,
+      }))
 
       const snapshot = quesitos
       setQuesitos((prev) =>
-        prev.map((q) =>
-          q.id !== quesitoId
-            ? q
-            : {
-                ...q,
-                itens_barema: [...q.itens_barema]
-                  .map((i) => {
-                    if (i.id === item.id) return { ...i, ordem: vizinho.ordem }
-                    if (i.id === vizinho.id) return { ...i, ordem: item.ordem }
-                    return i
-                  })
-                  .sort((a, b) => a.ordem - b.ordem),
-              },
-        ),
+        prev.map((q) => (q.id === quesitoId ? { ...q, itens_barema: reordenado } : q)),
       )
 
-      const [{ error: erro1 }, { error: erro2 }] = await Promise.all([
-        supabase.from('itens_barema').update({ ordem: vizinho.ordem }).eq('id', item.id),
-        supabase.from('itens_barema').update({ ordem: item.ordem }).eq('id', vizinho.id),
-      ])
+      const updates = reordenado.map((item) =>
+        supabase.from('itens_barema').update({ ordem: item.ordem }).eq('id', item.id),
+      )
+      const results = await Promise.all(updates)
+      const failed = results.find((r) => r.error)
 
-      if (erro1 || erro2) {
+      if (failed?.error) {
         setQuesitos(snapshot)
-        showError(`Erro ao reordenar item: ${(erro1 ?? erro2)?.message}`)
+        showError(`Erro ao reordenar item: ${failed.error.message}`)
         return
       }
       await refetch()
@@ -242,6 +234,6 @@ export function useEstrutura(editalId: string | null): UseEstruturaResult {
     criarItem,
     atualizarItem,
     excluirItem,
-    moverItem,
+    reordenarItens,
   }
 }
