@@ -59,6 +59,12 @@ export function ItemRow({
             {(mostrarProjecao ? projetado : confirmado).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} /{' '}
             {item.pontuacao_maxima}
           </span>
+          <span
+            className="font-mono text-[10px] text-ink/50"
+            title="Pontuação unitária do edital para este item"
+          >
+            {item.unidade.toLocaleString('pt-BR')} pt/unid.
+          </span>
           {margem > 0 ? (
             <span
               className="font-mono text-[10px] font-bold text-teal-dark"
@@ -79,6 +85,7 @@ export function ItemRow({
 
           <FonteList
             fontes={item.fontes_pontuacao}
+            unidadeReferencia={item.unidade}
             onUpdate={onUpdateFonte}
             onToggleConfirmado={onToggleConfirmado}
             onDelete={onDeleteFonte}
@@ -87,6 +94,7 @@ export function ItemRow({
           {addingFonte ? (
             <div className="mt-2">
               <FonteForm
+                unidadeReferencia={item.unidade}
                 onSubmit={async (fonte) => {
                   await onAddFonte(item.id, fonte)
                   setAddingFonte(false)

@@ -13,11 +13,19 @@ interface FonteFormInitial {
 interface FonteFormProps {
   initial?: FonteFormInitial
   submitLabel?: string
+  /** Valor unitário do item (coluna "Pontuação Unitária" do edital) — só exibido como referência. */
+  unidadeReferencia?: number
   onSubmit: (fonte: NovaFonte) => Promise<void>
   onCancel: () => void
 }
 
-export function FonteForm({ initial, submitLabel = 'Adicionar fonte', onSubmit, onCancel }: FonteFormProps) {
+export function FonteForm({
+  initial,
+  submitLabel = 'Adicionar fonte',
+  unidadeReferencia,
+  onSubmit,
+  onCancel,
+}: FonteFormProps) {
   const [descricao, setDescricao] = useState(initial?.descricao ?? '')
   const [valor, setValor] = useState(initial ? String(initial.valor).replace('.', ',') : '')
   const [link, setLink] = useState(initial?.link ?? '')
@@ -54,7 +62,7 @@ export function FonteForm({ initial, submitLabel = 'Adicionar fonte', onSubmit, 
         className="rounded border border-ink/20 px-2 py-1.5 text-sm"
       />
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <input
           type="text"
           inputMode="decimal"
@@ -70,6 +78,16 @@ export function FonteForm({ initial, submitLabel = 'Adicionar fonte', onSubmit, 
           onChange={(e) => setDataReferencia(e.target.value)}
           className="rounded border border-ink/20 px-2 py-1.5 text-sm"
         />
+        {unidadeReferencia != null ? (
+          <button
+            type="button"
+            onClick={() => setValor(String(unidadeReferencia).replace('.', ','))}
+            className="font-mono text-xs text-ink/60 underline hover:text-coral"
+            title="Preenche o campo Pontos com o valor unitário do edital"
+          >
+            usar valor do edital ({unidadeReferencia.toLocaleString('pt-BR')} pt/unidade)
+          </button>
+        ) : null}
       </div>
 
       <input

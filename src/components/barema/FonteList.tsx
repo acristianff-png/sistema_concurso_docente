@@ -6,12 +6,13 @@ import type { NovaFonte } from '@/hooks/useBarema'
 
 interface FonteListProps {
   fontes: FontePontuacao[]
+  unidadeReferencia?: number
   onUpdate: (fonteId: string, fonte: NovaFonte) => Promise<void>
   onToggleConfirmado: (fonteId: string, confirmado: boolean) => void
   onDelete: (fonteId: string) => void
 }
 
-export function FonteList({ fontes, onUpdate, onToggleConfirmado, onDelete }: FonteListProps) {
+export function FonteList({ fontes, unidadeReferencia, onUpdate, onToggleConfirmado, onDelete }: FonteListProps) {
   const [editingId, setEditingId] = useState<string | null>(null)
 
   if (fontes.length === 0) {
@@ -32,6 +33,7 @@ export function FonteList({ fontes, onUpdate, onToggleConfirmado, onDelete }: Fo
                 confirmado: f.confirmado,
               }}
               submitLabel="Salvar"
+              unidadeReferencia={unidadeReferencia}
               onSubmit={async (fonte) => {
                 await onUpdate(f.id, fonte)
                 setEditingId(null)

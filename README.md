@@ -248,8 +248,12 @@ Todas as tabelas têm RLS restringindo as linhas ao usuário autenticado
   gráfico de evolução
 - **Barema** — quesitos numerados e conectados por uma linha tracejada,
   itens expansíveis com suas fontes de pontuação; cada item mostra o
-  critério de pontuação do edital (quanto vale, por quê) sem precisar abrir
-  o PDF — o valor de cada fonte é sempre digitado manualmente
+  critério de pontuação do edital (quanto vale, por quê) e a pontuação
+  unitária (`X pt/unid.`) sempre visível, mesmo fechado, e repetida no
+  formulário de fonte (com um botão "usar valor do edital" para preencher
+  o campo Pontos) — sem precisar abrir o PDF nem a tela de editais para
+  confirmar o valor; o valor de cada fonte continua sempre digitado
+  manualmente
 - **Modo simulação** — toggle global que soma também fontes não confirmadas
   (projeção), sempre visualmente distinto do valor confirmado
 - **Plano de ação (kanban)** — 3 colunas com drag-and-drop, badges de
