@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/useToast'
 import type { AreaComDetalhes } from '@/types/domain'
@@ -17,6 +17,9 @@ interface UseAreasResult {
 export function useAreas(editalId: string | null): UseAreasResult {
   const [areas, setAreas] = useState<AreaComDetalhes[]>([])
   const [loading, setLoading] = useState(true)
+  // Só mostra o estado "carregando" na primeira carga (ou ao trocar de edital);
+  // refetches após salvar atualizam os dados em segundo plano, sem desmontar a tela.
+  const carregadoPara = useRef<string | null>(null)
   const { showError, showSuccess } = useToast()
 
   const refetch = useCallback(async () => {
@@ -25,7 +28,8 @@ export function useAreas(editalId: string | null): UseAreasResult {
       setLoading(false)
       return
     }
-    setLoading(true)
+    if (carregadoPara.current !== editalId) setLoading(true)
+    carregadoPara.current = editalId
     const { data, error } = await supabase
       .from('areas_tematicas')
       .select('*, area_elementos(*), area_sugestoes(*)')

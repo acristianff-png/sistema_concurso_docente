@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/useToast'
 import type { QuesitoComItens } from '@/types/domain'
@@ -25,6 +25,9 @@ interface UseBaremaResult {
 export function useBarema(editalId: string | null): UseBaremaResult {
   const [quesitos, setQuesitos] = useState<QuesitoComItens[]>([])
   const [loading, setLoading] = useState(true)
+  // Só mostra o estado "carregando" na primeira carga (ou ao trocar de edital);
+  // refetches após salvar atualizam os dados em segundo plano, sem desmontar a tela.
+  const carregadoPara = useRef<string | null>(null)
   const { showError } = useToast()
 
   const refetch = useCallback(async () => {
@@ -33,7 +36,8 @@ export function useBarema(editalId: string | null): UseBaremaResult {
       setLoading(false)
       return
     }
-    setLoading(true)
+    if (carregadoPara.current !== editalId) setLoading(true)
+    carregadoPara.current = editalId
     const { data, error } = await supabase
       .from('quesitos')
       .select('*, itens_barema(*, fontes_pontuacao(*))')
