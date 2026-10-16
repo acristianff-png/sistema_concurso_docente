@@ -1,13 +1,15 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useEditais } from '@/hooks/useEditais'
 import { Button } from '@/components/brand'
 import { EditalCard } from '@/components/editais/EditalCard'
 import { NovoEditalForm } from '@/components/editais/NovoEditalForm'
 
 export function EditaisPage() {
-  const { editais, loading, criarEdital, atualizarEdital, ativarEdital, excluirEdital, duplicarEdital } =
+  const { editais, loading, criarEdital, atualizarEdital, ativarEdital, excluirEdital, duplicarEdital, importarCsv } =
     useEditais()
   const [criando, setCriando] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <div className="flex flex-col gap-6">
@@ -30,6 +32,10 @@ export function EditaisPage() {
             criarEdital({ nome, data_publicacao: dataPublicacao, observacoes })
           }
           onDuplicar={duplicarEdital}
+          onImportarCsv={async (nome, dataPublicacao, quesitos) => {
+            const novoId = await importarCsv(nome, dataPublicacao, quesitos)
+            if (novoId) navigate(`/editais/${novoId}`)
+          }}
           onClose={() => setCriando(false)}
         />
       ) : null}

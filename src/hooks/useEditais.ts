@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/hooks/useToast'
-import type { Edital } from '@/types/database'
+import type { Edital, Json } from '@/types/database'
+import type { QuesitoCsv } from '@/utils/parseBaremaCsv'
 
 interface NovoEdital {
   nome: string
@@ -18,6 +19,7 @@ interface UseEditaisResult {
   ativarEdital: (id: string) => Promise<void>
   excluirEdital: (id: string) => Promise<void>
   duplicarEdital: (origemId: string, novoNome: string, dataPublicacao?: string | null) => Promise<void>
+  importarCsv: (nome: string, dataPublicacao: string | null, quesitos: QuesitoCsv[]) => Promise<string | null>
 }
 
 /**
@@ -150,5 +152,36 @@ export function useEditais(): UseEditaisResult {
     [refetch, showError, showSuccess],
   )
 
-  return { editais, loading, refetch, criarEdital, atualizarEdital, ativarEdital, excluirEdital, duplicarEdital }
+  const importarCsv = useCallback(
+    async (nome: string, dataPublicacao: string | null, quesitos: QuesitoCsv[]) => {
+      const { data, error } = await supabase.rpc('importar_edital_csv', {
+        p_nome: nome,
+        p_data_publicacao: dataPublicacao,
+        p_quesitos: quesitos as unknown as Json,
+      })
+      if (error) {
+        showError(`Erro ao importar edital do CSV: ${error.message}`)
+        return null
+      }
+      const totalItens = quesitos.reduce((soma, q) => soma + q.itens.length, 0)
+      showSuccess(
+        `Edital "${nome}" importado com ${quesitos.length} quesito(s) e ${totalItens} item(ns) — revise a estrutura (principalmente o teto de cada quesito) e ative quando estiver pronto.`,
+      )
+      await refetch()
+      return data
+    },
+    [refetch, showError, showSuccess],
+  )
+
+  return {
+    editais,
+    loading,
+    refetch,
+    criarEdital,
+    atualizarEdital,
+    ativarEdital,
+    excluirEdital,
+    duplicarEdital,
+    importarCsv,
+  }
 }

@@ -86,7 +86,10 @@ No **SQL Editor** do painel do Supabase, rode os arquivos de
    migration já faz o backfill sozinha
 9. `20261016150001_ordem_itens_barema.sql` — adiciona a coluna `ordem` em
    `itens_barema` (backfill pela ordem de criação atual) para reordenar os
-   itens dentro de cada quesito pelas setas ↑/↓ em `/editais/:id`
+   itens dentro de cada quesito por drag-and-drop em `/editais/:id`
+10. `20261023160001_importar_edital_csv.sql` — define a função
+    `importar_edital_csv()`, usada pela opção "Importar de um CSV" ao criar
+    um novo edital
 
 Alternativamente, se preferir usar o [Supabase CLI](https://supabase.com/docs/guides/cli):
 
@@ -258,14 +261,32 @@ Todas as tabelas têm RLS restringindo as linhas ao usuário autenticado
   Markdown
 - **Editais** (`/editais`) — lista todos os editais cadastrados (não só o
   ativo), com botão para ativar qualquer um deles, criar um edital em
-  branco ou duplicando a estrutura de outro, editar nome/data/observações e
-  excluir. Em `/editais/:id` dá pra editar a estrutura do edital em si —
-  adicionar, editar e remover quesitos e os itens que pontuam em cada um
-  (nome, valor unitário, teto, critério do edital) — sem precisar de SQL.
-  Cada item tem uma alça de arrastar (⠿) para reordenar por drag-and-drop
-  dentro do quesito (@dnd-kit, mesma lib do kanban), deixando a lista na
-  sequência exata do documento oficial do edital; essa ordem é a mesma
-  usada na tela `/barema`
+  branco, duplicando a estrutura de outro **ou importando de um CSV**, e
+  editar nome/data/observações e excluir. Em `/editais/:id` dá pra editar a
+  estrutura do edital em si — adicionar, editar e remover quesitos e os
+  itens que pontuam em cada um (nome, valor unitário, teto, critério do
+  edital) — sem precisar de SQL. Cada item tem uma alça de arrastar (⠿)
+  para reordenar por drag-and-drop dentro do quesito (@dnd-kit, mesma lib
+  do kanban), deixando a lista na sequência exata do documento oficial do
+  edital; essa ordem é a mesma usada na tela `/barema`
+
+### Importar edital de um CSV
+
+Em "+ Novo edital" → "Importar de um CSV", é só escolher o arquivo. O CSV
+precisa ter as colunas **Quesito**, **Nome do Item**, **Pontuação
+Unitária** e **Pontuação Máxima** (a coluna de descrição, usada como
+critério do edital, é opcional) — a ordem das colunas não importa, os
+nomes são reconhecidos por palavra-chave no cabeçalho. A tela mostra uma
+prévia (quantos quesitos/itens foram lidos, linhas ignoradas por falta de
+dado) antes de confirmar.
+
+O teto de cada quesito **não vem do CSV** — é calculado como a soma das
+pontuações máximas dos itens dele, porque a maioria dos editais não lista
+esse total numa coluna própria. Esse valor é só uma estimativa: confira e
+ajuste o teto de cada quesito em `/editais/:id` depois de importar, caso o
+edital real defina um teto diferente da soma dos itens. O edital
+importado entra sempre inativo, para dar tempo de revisar antes de
+colocar em uso no Dashboard/Barema/Histórico.
 
 ## Licença
 

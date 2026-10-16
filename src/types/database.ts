@@ -3,6 +3,7 @@ export type PrioridadeAcao = 'baixa' | 'media' | 'alta'
 export type StatusSugestao = 'sugerida' | 'aceita' | 'descartada'
 export type ModoCalculo = 'manual' | 'carga_horaria' | 'periodo'
 export type UnidadePeriodo = 'semestre' | 'ano'
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export interface Edital {
   id: string
@@ -487,6 +488,14 @@ export interface Database {
           p_edital_origem_id: string
           p_novo_nome: string
           p_data_publicacao?: string | null
+        }
+        Returns: string
+      }
+      importar_edital_csv: {
+        Args: {
+          p_nome: string
+          p_data_publicacao: string | null
+          p_quesitos: Json
         }
         Returns: string
       }
